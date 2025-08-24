@@ -1,0 +1,60 @@
+Create a complete "To-Do Task Manager" web application using Python and Flask.  
+
+### Requirements:
+
+1. **Backend & Database**
+   - Use Flask as the backend framework.
+   - Use SQLite as the database.
+   - Create a Task table with: id, title, description, status (Pending/Completed), priority (High/Medium/Low), due_date, points, and created_date.
+   - Create a User table with: id, username, email, password (hashed).
+
+2. **User Authentication**
+   - Implement Register, Login, and Logout.
+   - Hash passwords securely.
+   - Each user should only see and manage their own tasks.
+
+3. **Core To-Do Features**
+   - Add, view, edit, and delete tasks.
+   - Show tasks in a clean Bootstrap-styled table.
+   - Allow marking tasks as completed with one click.
+   - Add priority (High/Medium/Low) and due date for each task.
+
+4. **Deadline Feature**
+   - Display due dates in the task list.
+   - Highlight overdue tasks in red.
+   - Show tasks due today with a “Due Today” badge.
+   - Provide options to sort tasks by due date.
+   - Add filters for: All tasks, Overdue tasks, Upcoming tasks.
+
+5. **Gamification**
+   - Award points for completing tasks (e.g., +5 points per completed task).
+   - Track user’s total points.
+   - Show a progress bar or badge system:
+     - Bronze (0–20 points)
+     - Silver (21–50 points)
+     - Gold (51+ points)
+
+6. **Analytics Dashboard**
+   - Create a separate page `/dashboard` with charts (using Chart.js).
+   - Include:
+     a) Pending vs Completed tasks (pie chart or bar chart).
+     b) Tasks by priority (High/Medium/Low).
+     c) Weekly productivity trend (line chart).
+     d) Overdue tasks count.
+     e) Tasks completed before vs after deadline.
+
+7. **Frontend (UI/UX)**
+   - Use Bootstrap for responsive design.
+   - Add a navigation bar with: Home, Add Task, Dashboard, Profile, Logout.
+   - Highlight completed tasks with strikethrough or checkmark.
+   - Use date picker for due dates.
+   - Add a dark mode toggle for better user experience.
+
+8. **Code Quality**
+   - Use Flask templates (Jinja2) for pages.
+   - Organize routes clearly (/, /add, /edit/<id>, /delete/<id>, /login, /register, /dashboard).
+   - Comment code for clarity.
+   - Pre-populate with a few sample users and tasks for demonstration.
+
+### Goal:
+The app should look professional, demonstrate CRUD, authentication, gamification, deadline handling, and analytics. It must run fully in the development environment with no extra manual setup.

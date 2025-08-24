@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Task - Task Manager{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow">
+            <div class="card-header bg-warning">
+                <h4 class="card-title mb-0">
+                    <i class="bi bi-pencil-square me-2"></i>Edit Task
+                </h4>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Task Title <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="title" name="title" 
+                               value="{{ task.title }}" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" id="description" name="description" rows="3">{{ task.description or '' }}</textarea>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="priority" class="form-label">Priority</label>
+                            <select class="form-select" id="priority" name="priority">
+                                <option value="High" {{ 'selected' if task.priority == 'High' else '' }}>High</option>
+                                <option value="Medium" {{ 'selected' if task.priority == 'Medium' else '' }}>Medium</option>
+                                <option value="Low" {{ 'selected' if task.priority == 'Low' else '' }}>Low</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="points" class="form-label">Points</label>
+                            <input type="number" class="form-control" id="points" name="points" 
+                                   value="{{ task.points }}" min="1" max="20">
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="due_date" class="form-label">Due Date</label>
+                        <input type="date" class="form-control" id="due_date" name="due_date" 
+                               value="{{ task.due_date.strftime('%Y-%m-%d') if task.due_date else '' }}">
+                    </div>
+
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle-fill me-2"></i>
+                        <strong>Current Status:</strong> {{ task.status }}
+                        {% if task.status == 'Completed' and task.completed_date %}
+                            <br><small>Completed on: {{ task.completed_date.strftime('%Y-%m-%d %H:%M') }}</small>
+                        {% endif %}
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('index') }}" class="btn btn-secondary me-md-2">
+                            <i class="bi bi-x-circle me-1"></i>Cancel
+                        </a>
+                        <button type="submit" class="btn btn-warning">
+                            <i class="bi bi-check-circle me-1"></i>Update Task
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

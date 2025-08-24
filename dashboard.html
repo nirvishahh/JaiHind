@@ -1,0 +1,285 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Task Manager{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1><i class="bi bi-graph-up me-2"></i>Analytics Dashboard</h1>
+    <div class="text-end">
+        <div class="badge bg-{{ user.get_badge().class }} fs-6">
+            <i class="bi bi-award-fill me-1"></i>{{ user.get_badge().name }} Badge
+        </div>
+        <div class="text-muted mt-1">
+            <i class="bi bi-star-fill text-warning me-1"></i>{{ user.total_points }} points
+        </div>
+    </div>
+</div>
+
+<!-- Summary Cards -->
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title">Total Tasks</h6>
+                        <h2 class="mb-0">{{ analytics.total_tasks }}</h2>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-list-task display-4 opacity-75"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title">Completed</h6>
+                        <h2 class="mb-0">{{ analytics.completed_tasks }}</h2>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-check-circle-fill display-4 opacity-75"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title">Pending</h6>
+                        <h2 class="mb-0">{{ analytics.pending_tasks }}</h2>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-clock-fill display-4 opacity-75"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+        <div class="card bg-danger text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title">Overdue</h6>
+                        <h2 class="mb-0">{{ analytics.overdue_tasks }}</h2>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-exclamation-triangle-fill display-4 opacity-75"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row 1 -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Task Status Distribution</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="statusChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Tasks by Priority</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="priorityChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row 2 -->
+<div class="row mb-4">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Weekly Productivity Trend</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="productivityChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">On-time vs Late Completion</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="completionChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Additional Stats -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Productivity Summary</h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-4">
+                        <div class="border-end">
+                            <h4 class="text-success">{{ analytics.on_time_tasks }}</h4>
+                            <p class="text-muted">Tasks Completed On Time</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="border-end">
+                            <h4 class="text-warning">{{ analytics.late_tasks }}</h4>
+                            <p class="text-muted">Tasks Completed Late</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <h4 class="text-info">
+                            {% if analytics.completed_tasks > 0 %}
+                                {{ "%.1f"|format((analytics.on_time_tasks / analytics.completed_tasks) * 100) }}%
+                            {% else %}
+                                0%
+                            {% endif %}
+                        </h4>
+                        <p class="text-muted">On-time Completion Rate</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Task Status Chart (Pie Chart)
+    const statusCtx = document.getElementById('statusChart').getContext('2d');
+    new Chart(statusCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Completed', 'Pending'],
+            datasets: [{
+                data: [{{ analytics.completed_tasks }}, {{ analytics.pending_tasks }}],
+                backgroundColor: ['#28a745', '#ffc107'],
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+
+    // Priority Chart (Bar Chart)
+    const priorityCtx = document.getElementById('priorityChart').getContext('2d');
+    new Chart(priorityCtx, {
+        type: 'bar',
+        data: {
+            labels: ['High', 'Medium', 'Low'],
+            datasets: [{
+                label: 'Tasks',
+                data: [{{ analytics.high_priority }}, {{ analytics.medium_priority }}, {{ analytics.low_priority }}],
+                backgroundColor: ['#dc3545', '#ffc107', '#28a745']
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                }
+            }
+        }
+    });
+
+    // Weekly Productivity Chart (Line Chart)
+    const productivityCtx = document.getElementById('productivityChart').getContext('2d');
+    const today = new Date();
+    const weekLabels = [];
+    for (let i = 6; i >= 0; i--) {
+        const day = new Date(today);
+        day.setDate(day.getDate() - i);
+        weekLabels.push(day.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }));
+    }
+
+    new Chart(productivityCtx, {
+        type: 'line',
+        data: {
+            labels: weekLabels,
+            datasets: [{
+                label: 'Tasks Completed',
+                data: {{ analytics.weekly_completed }},
+                borderColor: '#007bff',
+                backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1
+                    }
+                }
+            }
+        }
+    });
+
+    // Completion Chart (Doughnut Chart)
+    const completionCtx = document.getElementById('completionChart').getContext('2d');
+    new Chart(completionCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['On Time', 'Late'],
+            datasets: [{
+                data: [{{ analytics.on_time_tasks }}, {{ analytics.late_tasks }}],
+                backgroundColor: ['#28a745', '#dc3545'],
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block title %}Profile - Task Manager{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-info text-white">
+                <h4 class="card-title mb-0">
+                    <i class="bi bi-person-circle me-2"></i>User Profile
+                </h4>
+            </div>
+            <div class="card-body p-4">
+                <div class="row">
+                    <div class="col-md-4 text-center mb-4">
+                        <div class="mb-3">
+                            <i class="bi bi-person-circle text-muted" style="font-size: 6rem;"></i>
+                        </div>
+                        <h4>{{ user.username }}</h4>
+                        <p class="text-muted">{{ user.email }}</p>
+                        
+                        <!-- Badge Display -->
+                        <div class="mb-3">
+                            <span class="badge bg-{{ user.get_badge().class }} fs-5 p-2">
+                                <i class="bi bi-award-fill me-2"></i>{{ user.get_badge().name }} Badge
+                            </span>
+                        </div>
+                        
+                        <!-- Points Display -->
+                        <div class="alert alert-info">
+                            <h5 class="mb-0">
+                                <i class="bi bi-star-fill text-warning me-1"></i>{{ user.total_points }} Points
+                            </h5>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-8">
+                        <h5 class="mb-3">Account Information</h5>
+                        
+                        <div class="table-responsive">
+                            <table class="table">
+                                <tbody>
+                                    <tr>
+                                        <th scope="row" width="30%">Username</th>
+                                        <td>{{ user.username }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Email</th>
+                                        <td>{{ user.email }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Member Since</th>
+                                        <td>{{ user.created_date.strftime('%B %d, %Y') }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Total Points</th>
+                                        <td>
+                                            <span class="badge bg-warning text-dark fs-6">{{ user.total_points }} points</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Current Badge</th>
+                                        <td>
+                                            <span class="badge bg-{{ user.get_badge().class }} fs-6">{{ user.get_badge().name }}</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Total Tasks</th>
+                                        <td>{{ user.tasks|length }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <!-- Badge Progress -->
+                        <h5 class="mb-3 mt-4">Badge Progress</h5>
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between">
+                                <span>Progress to next badge</span>
+                                {% if user.total_points < 21 %}
+                                    <span>{{ user.total_points }}/21 (Silver Badge)</span>
+                                {% elif user.total_points < 51 %}
+                                    <span>{{ user.total_points }}/51 (Gold Badge)</span>
+                                {% else %}
+                                    <span>Maximum badge achieved!</span>
+                                {% endif %}
+                            </div>
+                            {% if user.total_points < 21 %}
+                                <div class="progress mt-2">
+                                    <div class="progress-bar" role="progressbar" 
+                                         style="width: {{ (user.total_points/21*100)|round(1) }}%">
+                                    </div>
+                                </div>
+                            {% elif user.total_points < 51 %}
+                                <div class="progress mt-2">
+                                    <div class="progress-bar bg-warning" role="progressbar" 
+                                         style="width: {{ (user.total_points/51*100)|round(1) }}%">
+                                    </div>
+                                </div>
+                            {% else %}
+                                <div class="progress mt-2">
+                                    <div class="progress-bar bg-success" role="progressbar" style="width: 100%">
+                                        Gold Badge Achieved!
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Badge Requirements -->
+                        <div class="card mt-3">
+                            <div class="card-body">
+                                <h6 class="card-title">Badge Requirements</h6>
+                                <ul class="list-unstyled mb-0">
+                                    <li class="mb-1">
+                                        <span class="badge bg-dark me-2">Bronze</span> 0 - 20 points
+                                    </li>
+                                    <li class="mb-1">
+                                        <span class="badge bg-secondary me-2">Silver</span> 21 - 50 points
+                                    </li>
+                                    <li class="mb-1">
+                                        <span class="badge bg-warning me-2">Gold</span> 51+ points
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-4">
+                    <a href="{{ url_for('index') }}" class="btn btn-primary">
+                        <i class="bi bi-house-fill me-1"></i>Back to Tasks
+                    </a>
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-outline-primary">
+                        <i class="bi bi-graph-up me-1"></i>View Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
